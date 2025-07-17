@@ -175,11 +175,15 @@ export default function SpectatorPage() {
                   <CardTitle>Live Betting Action</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    {(["red", "green", "blue"] as Color[]).map((color) => (
+                  <div className="grid grid-cols-3 gap-4 mb-6 place-items-center">
+                    {[
+                      { color: "red", label: "Trash Can", icon: "🗑️" },
+                      { color: "green", label: "Trap Can", icon: "🪤" },
+                      { color: "blue", label: "Rat Dumpster", icon: "🐀" },
+                    ].map(({ color, label, icon }) => (
                       <div
                         key={color}
-                        className={`p-6 rounded-lg border-2 text-center ${
+                        className={`p-6 rounded-lg border-2 flex flex-col items-center justify-center h-48 w-full text-center ${
                           color === "red"
                             ? "bg-red-500/10 border-red-500"
                             : color === "green"
@@ -188,13 +192,13 @@ export default function SpectatorPage() {
                         }`}
                       >
                         <div
-                          className={`text-4xl mb-2 ${
+                          className={`text-[4rem] mb-2 leading-none ${
                             color === "red" ? "text-red-400" : color === "green" ? "text-green-400" : "text-blue-400"
                           }`}
                         >
-                          {color === "red" ? "🔴" : color === "green" ? "🟢" : "🔵"}
+                          {icon}
                         </div>
-                        <div className="text-xl font-bold capitalize">{color}</div>
+                        <div className="text-2xl font-bold mb-1">{label}</div>
                         <div className="text-2xl font-bold text-yellow-400 mt-2">
                           {color === "red" ? liveBets.red : color === "green" ? liveBets.green : liveBets.blue} GORB
                         </div>
@@ -214,12 +218,18 @@ export default function SpectatorPage() {
                   <div className="border-t border-gray-600 pt-4">
                     <h3 className="text-lg font-bold mb-3">Make Your Prediction (10 Points)</h3>
                     <div className="grid grid-cols-3 gap-3">
-                      {(["red", "green", "blue"] as Color[]).map((color) => (
+                      {[
+                        { color: "red", label: "Trash Can", icon: "🗑️" },
+                        { color: "green", label: "Trap Can", icon: "🪤" },
+                        { color: "blue", label: "Rat Dumpster", icon: "🐀" },
+                      ].map(({ color, label, icon }) => (
                         <Button
                           key={color}
-                          onClick={() => makeSpectatorBet(color)}
+                          onClick={() => makeSpectatorBet(color as Color)}
                           disabled={!isRoundActive || spectatorBet !== null || spectatorPoints < 10}
-                          className={`h-12 ${spectatorBet?.prediction === color ? "ring-2 ring-yellow-400" : ""} ${
+                          className={`h-32 flex flex-col items-center justify-center text-xl font-bold ${
+                            spectatorBet?.prediction === color ? "ring-2 ring-yellow-400" : ""
+                          } ${
                             color === "red"
                               ? "bg-red-500/20 border border-red-500 hover:bg-red-500/30"
                               : color === "green"
@@ -227,14 +237,15 @@ export default function SpectatorPage() {
                                 : "bg-blue-500/20 border border-blue-500 hover:bg-blue-500/30"
                           }`}
                         >
-                          {color === "red" ? "🔴" : color === "green" ? "🟢" : "🔵"} Predict {color}
+                          <span className={`text-[3rem] mb-1 ${color === "red" ? "text-red-400" : color === "green" ? "text-green-400" : "text-blue-400"}`}>{icon}</span>
+                          Predict {label}
                         </Button>
                       ))}
                     </div>
                     {spectatorBet && (
                       <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                         <div className="text-blue-400 font-bold">
-                          ✅ Prediction: {spectatorBet.prediction.toUpperCase()} will win!
+                          ✅ Prediction: {spectatorBet.prediction === "red" ? "Trash Can" : spectatorBet.prediction === "green" ? "Trap Can" : "Rat Dumpster"} will win!
                         </div>
                       </div>
                     )}
@@ -284,19 +295,19 @@ export default function SpectatorPage() {
                   <div className="space-y-2 max-h-48 overflow-y-auto text-sm">
                     <div className="flex gap-2">
                       <span className="text-blue-400">DegenKing420:</span>
-                      <span>RED IS DEAD 💀</span>
+                      <span>TRASH can IS DEAD 💀</span>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-green-400">GreenGoblin:</span>
-                      <span>GREEN MACHINE GO BRRR 🚀</span>
+                      <span>TRAP MACHINE GO BRRR 🚀</span>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-red-400">RedRocket:</span>
-                      <span>BLUE WHALE INCOMING 🐋</span>
+                      <span>RAT WHALE INCOMING 🐋</span>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-purple-400">SpectatorPro:</span>
-                      <span>Color surge next round? 👀</span>
+                      <span>TRASh surge next round? 👀</span>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-yellow-400">GorbGod:</span>

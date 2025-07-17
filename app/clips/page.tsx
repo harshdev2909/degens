@@ -31,7 +31,7 @@ export default function ClipsPage() {
       result: "win",
       amount: 420,
       multiplier: 8.5,
-      timestamp: "2024-01-15 14:30",
+      timestamp: "2025-07-17 14:30",
       reactions: ["🔥", "💎", "🚀"],
       isColorSurge: false,
     },
@@ -42,7 +42,7 @@ export default function ClipsPage() {
       result: "win",
       amount: 1000,
       multiplier: 10.0,
-      timestamp: "2024-01-15 15:45",
+      timestamp: "2025-07-17 15:45",
       reactions: ["🔥", "💀", "👑"],
       isColorSurge: true,
     },
@@ -53,7 +53,7 @@ export default function ClipsPage() {
       result: "loss",
       amount: 150,
       multiplier: 0,
-      timestamp: "2024-01-15 13:20",
+      timestamp: "2025-07-17 13:20",
       reactions: ["😭", "💀"],
       isColorSurge: false,
     },
@@ -69,7 +69,11 @@ export default function ClipsPage() {
   }
 
   const getColorEmoji = (color: "red" | "green" | "blue") => {
-    return color === "red" ? "🔴" : color === "green" ? "🟢" : "🔵"
+    return color === "red"
+      ? "🗑️"
+      : color === "green"
+        ? "🪤"
+        : "🐀"
   }
 
   return (
@@ -220,7 +224,13 @@ export default function ClipsPage() {
                         <span className="text-gray-400">Color</span>
                         <span className="flex items-center gap-1">
                           {getColorEmoji(selectedClip.playerColor)}
-                          <span className="capitalize">{selectedClip.playerColor}</span>
+                          <span className="capitalize">
+                            {selectedClip.playerColor === "red"
+                              ? "Trash Can"
+                              : selectedClip.playerColor === "green"
+                                ? "Trap Can"
+                                : "Rat Dumpster"}
+                          </span>
                         </span>
                       </div>
                       <div className="flex justify-between">

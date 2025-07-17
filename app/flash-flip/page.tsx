@@ -275,11 +275,15 @@ export default function FlashFlipPage() {
                     <div>
                       <h3 className="text-lg font-bold mb-3">Choose Your Color</h3>
                       <div className="grid grid-cols-3 gap-4">
-                        {(["red", "green", "blue"] as Color[]).map((color) => (
+                        {[
+                          { color: "red", label: "Trash Can", icon: "🗑️" },
+                          { color: "green", label: "Trap Can", icon: "🪤" },
+                          { color: "blue", label: "Rat Dumpster", icon: "🐀" },
+                        ].map(({ color, label, icon }) => (
                           <Button
                             key={color}
-                            onClick={() => setSelectedColor(color)}
-                            className={`h-16 text-xl font-bold transition-all ${
+                            onClick={() => setSelectedColor(color as Color)}
+                            className={`h-32 flex flex-col items-center justify-center text-xl font-bold transition-all ${
                               color === "red"
                                 ? `bg-red-500/20 border-2 border-red-500 hover:bg-red-500/30 ${selectedColor === "red" ? "ring-2 ring-red-400 bg-red-500/40" : ""}`
                                 : color === "green"
@@ -287,19 +291,15 @@ export default function FlashFlipPage() {
                                   : `bg-blue-500/20 border-2 border-blue-500 hover:bg-blue-500/30 ${selectedColor === "blue" ? "ring-2 ring-blue-400 bg-blue-500/40" : ""}`
                             }`}
                           >
-                            <div className="text-center">
+                            <div className="flex flex-col items-center">
                               <div
-                                className={`text-3xl mb-1 ${
-                                  color === "red"
-                                    ? "text-red-400"
-                                    : color === "green"
-                                      ? "text-green-400"
-                                      : "text-blue-400"
+                                className={`text-[4rem] mb-2 leading-none ${
+                                  color === "red" ? "text-red-400" : color === "green" ? "text-green-400" : "text-blue-400"
                                 }`}
                               >
-                                {color === "red" ? "🔴" : color === "green" ? "🟢" : "🔵"}
+                                {icon}
                               </div>
-                              <div className="capitalize">{color}</div>
+                              <div className="capitalize text-2xl mb-1">{label}</div>
                             </div>
                           </Button>
                         ))}
@@ -372,17 +372,19 @@ export default function FlashFlipPage() {
                           className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600"
                         >
                           <div className="flex items-center gap-4">
-                            <div className="text-2xl">
+                            <div className="text-[2.5rem]">
                               {challenge.challengerColor === "red"
-                                ? "🔴"
+                                ? "🗑️"
                                 : challenge.challengerColor === "green"
-                                  ? "🟢"
-                                  : "🔵"}
+                                  ? "🪤"
+                                  : "🐀"}
                             </div>
                             <div>
                               <div className="font-bold">{challenge.challenger}</div>
                               <div className="text-sm text-gray-400">
-                                {challenge.challengerColor} vs {challenge.opponentColor}
+                                {challenge.challengerColor === "red" ? "Trash Can" : challenge.challengerColor === "green" ? "Trap Can" : "Rat Dumpster"}
+                                {" vs "}
+                                {challenge.opponentColor === "red" ? "Trash Can" : challenge.opponentColor === "green" ? "Trap Can" : "Rat Dumpster"}
                               </div>
                             </div>
                           </div>
@@ -420,8 +422,12 @@ export default function FlashFlipPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-center space-y-4">
-                        <div className="text-4xl">
-                          {lastResult.winnerColor === "red" ? "🔴" : lastResult.winnerColor === "green" ? "🟢" : "🔵"}
+                        <div className="text-5xl">
+                          {lastResult.winnerColor === "red"
+                            ? "🗑️"
+                            : lastResult.winnerColor === "green"
+                            ? "🪤"
+                            : "🐀"}
                         </div>
                         <div className="text-2xl font-bold">
                           <span
@@ -429,8 +435,8 @@ export default function FlashFlipPage() {
                               lastResult.winnerColor === "red"
                                 ? "text-red-400"
                                 : lastResult.winnerColor === "green"
-                                  ? "text-green-400"
-                                  : "text-blue-400"
+                                ? "text-green-400"
+                                : "text-blue-400"
                             }
                           >
                             {lastResult.winner} WINS!
@@ -440,7 +446,9 @@ export default function FlashFlipPage() {
                           Won: <span className="text-yellow-400 font-bold">{lastResult.amount} GORB</span>
                         </div>
                         <div className="text-sm text-gray-400">
-                          {lastResult.winnerColor} defeated {lastResult.loserColor}
+                          {lastResult.winnerColor === "red" ? "Trash Can" : lastResult.winnerColor === "green" ? "Trap Can" : "Rat Dumpster"}
+                          {" defeated "}
+                          {lastResult.loserColor === "red" ? "Trash Can" : lastResult.loserColor === "green" ? "Trap Can" : "Rat Dumpster"}
                         </div>
                       </div>
                     </CardContent>
@@ -489,7 +497,7 @@ export default function FlashFlipPage() {
                       <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold text-xs">
                         1
                       </div>
-                      <div>Choose your color and bet amount</div>
+                      <div>Choose your TRASH and bet amount</div>
                     </div>
                     <div className="flex items-start gap-2">
                       <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold text-xs">

@@ -192,7 +192,7 @@ export default function GamePage() {
                       Round #{roundNumber}
                       {isColorSurge && (
                         <Badge className="bg-gradient-to-r from-red-500 to-blue-500 text-white animate-pulse">
-                          COLOR SURGE! 🌟
+                          TRASH SURGE! 🌟
                         </Badge>
                       )}
                     </CardTitle>
@@ -218,8 +218,8 @@ export default function GamePage() {
                     <Progress value={((30 - timeLeft) / 30) * 100} className="h-2" />
                     {isColorSurge && (
                       <div className="text-center p-3 bg-gradient-to-r from-red-500/20 via-green-500/20 to-blue-500/20 rounded-lg border border-yellow-500/30">
-                        <div className="text-yellow-400 font-bold">⚡ COLOR SURGE ACTIVE ⚡</div>
-                        <div className="text-sm text-gray-300">One random color will get 10x multiplier!</div>
+                        <div className="text-yellow-400 font-bold">⚡ TRASH SURGE ACTIVE ⚡</div>
+                        <div className="text-sm text-gray-300">One random trash will get 10x multiplier!</div>
                       </div>
                     )}
                   </div>
@@ -229,16 +229,20 @@ export default function GamePage() {
               {/* Color Selection */}
               <Card className="bg-gray-900/50 border-purple-500/30">
                 <CardHeader>
-                  <CardTitle>Choose Your Color</CardTitle>
+                  <CardTitle>Choose Your Trash</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    {(["red", "green", "blue"] as Color[]).map((color) => (
+                  <div className="grid grid-cols-3 gap-4 mb-6 place-items-center">
+                    {([
+                      { color: "red", label: "Trash Can", icon: "🗑️" },
+                      { color: "green", label: "Trap Can", icon: "🪤" },
+                      { color: "blue", label: "Rat Dumpster", icon: "🐀" },
+                    ] as const).map(({ color, label, icon }) => (
                       <Button
                         key={color}
                         onClick={() => setSelectedColor(color)}
                         disabled={!isRoundActive || userBet !== null}
-                        className={`h-20 text-xl font-bold transition-all ${
+                        className={`flex flex-col items-center justify-center h-48 w-full text-3xl font-bold transition-all ${
                           color === "red"
                             ? `bg-red-500/20 border-2 border-red-500 hover:bg-red-500/30 ${selectedColor === "red" ? "ring-2 ring-red-400 bg-red-500/40" : ""}`
                             : color === "green"
@@ -246,16 +250,16 @@ export default function GamePage() {
                               : `bg-blue-500/20 border-2 border-blue-500 hover:bg-blue-500/30 ${selectedColor === "blue" ? "ring-2 ring-blue-400 bg-blue-500/40" : ""}`
                         }`}
                       >
-                        <div className="text-center">
+                        <div className="flex flex-col items-center">
                           <div
-                            className={`text-3xl mb-1 ${
+                            className={`text-[5rem] mb-2 leading-none ${
                               color === "red" ? "text-red-400" : color === "green" ? "text-green-400" : "text-blue-400"
                             }`}
                           >
-                            {color === "red" ? "🔴" : color === "green" ? "🟢" : "🔵"}
+                            {icon}
                           </div>
-                          <div className="capitalize">{color}</div>
-                          <div className="text-sm opacity-75">
+                          <div className="capitalize text-2xl mb-1">{label}</div>
+                          <div className="text-base opacity-75 font-mono">
                             {color === "red" ? totals.red : color === "green" ? totals.green : totals.blue} GORB
                           </div>
                         </div>
@@ -303,7 +307,11 @@ export default function GamePage() {
                   <CardContent>
                     <div className="text-center space-y-4">
                       <div className="text-4xl">
-                        {lastResult.winner === "red" ? "🔴" : lastResult.winner === "green" ? "🟢" : "🔵"}
+                        {lastResult.winner === "red"
+                          ? "🗑️"
+                          : lastResult.winner === "green"
+                          ? "🪤"
+                          : "🐀"}
                       </div>
                       <div className="text-2xl font-bold">
                         <span
@@ -315,7 +323,11 @@ export default function GamePage() {
                                 : "text-blue-400"
                           }
                         >
-                          {lastResult.winner.toUpperCase()} WINS!
+                          {lastResult.winner === "red"
+                            ? "TRASH CAN WINS!"
+                            : lastResult.winner === "green"
+                            ? "TRAP CAN WINS!"
+                            : "RAT DUMPSTER WINS!"}
                         </span>
                       </div>
                       <div className="text-lg">
@@ -323,9 +335,9 @@ export default function GamePage() {
                         <span className="text-yellow-400 font-bold">{lastResult.multiplier.toFixed(2)}x</span>
                       </div>
                       <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>Red: {lastResult.redAmount} GORB</div>
-                        <div>Green: {lastResult.greenAmount} GORB</div>
-                        <div>Blue: {lastResult.blueAmount} GORB</div>
+                        <div>Trash Can: {lastResult.redAmount} GORB</div>
+                        <div>Trap Can: {lastResult.greenAmount} GORB</div>
+                        <div>Rat Dumpster: {lastResult.blueAmount} GORB</div>
                       </div>
                     </div>
                   </CardContent>
@@ -360,7 +372,15 @@ export default function GamePage() {
                                     : "bg-blue-400"
                               }`}
                             />
-                            <span className="text-sm font-mono">{bet.wallet}</span>
+                            <span className="text-sm font-mono">
+                              {bet.color === "red"
+                                ? "🗑️ Trash Can"
+                                : bet.color === "green"
+                                ? "🪤 Trap Can"
+                                : "🐀 Rat Dumpster"}
+                              {" "}
+                              {bet.wallet}
+                            </span>
                           </div>
                           <span className="text-yellow-400 font-bold">{bet.amount}</span>
                         </div>
@@ -379,21 +399,21 @@ export default function GamePage() {
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-red-400 rounded-full" />
-                        Red
+                        <span>🗑️ Trash Can</span>
                       </span>
                       <span className="text-red-400 font-bold">{totals.red} GORB</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-green-400 rounded-full" />
-                        Green
+                        <span>🪤 Trap Can</span>
                       </span>
                       <span className="text-green-400 font-bold">{totals.green} GORB</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-blue-400 rounded-full" />
-                        Blue
+                        <span>🐀 Rat Dumpster</span>
                       </span>
                       <span className="text-blue-400 font-bold">{totals.blue} GORB</span>
                     </div>

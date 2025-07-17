@@ -105,7 +105,11 @@ export default function LeaderboardPage() {
   }
 
   const getColorEmoji = (color: "red" | "green" | "blue") => {
-    return color === "red" ? "🔴" : color === "green" ? "🟢" : "🔵"
+    return color === "red"
+      ? "🗑️"
+      : color === "green"
+        ? "🪤"
+        : "🐀"
   }
 
   return (
@@ -182,7 +186,7 @@ export default function LeaderboardPage() {
                         <span className="text-lg">{getColorEmoji(player.favoriteColor)}</span>
                         <Badge
                           variant="outline"
-                          className={`${
+                          className={`$ {
                             player.favoriteColor === "red"
                               ? "border-red-500 text-red-400"
                               : player.favoriteColor === "green"
@@ -190,7 +194,11 @@ export default function LeaderboardPage() {
                                 : "border-blue-500 text-blue-400"
                           }`}
                         >
-                          {player.favoriteColor}
+                          {player.favoriteColor === "red"
+                            ? "Trash Can"
+                            : player.favoriteColor === "green"
+                              ? "Trap Can"
+                              : "Rat Dumpster"}
                         </Badge>
                       </div>
                       <div className="text-sm">
@@ -256,6 +264,13 @@ export default function LeaderboardPage() {
                           </div>
                           <div className="flex items-center gap-1">
                             <span className="text-lg">{getColorEmoji(player.favoriteColor)}</span>
+                            <span className="text-xs text-gray-400 font-mono">
+                              {player.favoriteColor === "red"
+                                ? "Trash Can"
+                                : player.favoriteColor === "green"
+                                  ? "Trap Can"
+                                  : "Rat Dumpster"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -292,19 +307,19 @@ export default function LeaderboardPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="flex items-center gap-2">
-                          🔴 <span className="text-red-400">Red</span>
+                          <span className="text-lg">🗑️</span> <span className="text-red-400">Trash Can</span>
                         </span>
                         <span>34.2%</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="flex items-center gap-2">
-                          🟢 <span className="text-green-400">Green</span>
+                          <span className="text-lg">🪤</span> <span className="text-green-400">Trap Can</span>
                         </span>
                         <span>32.8%</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="flex items-center gap-2">
-                          🔵 <span className="text-blue-400">Blue</span>
+                          <span className="text-lg">🐀</span> <span className="text-blue-400">Rat Dumpster</span>
                         </span>
                         <span>33.0%</span>
                       </div>
@@ -331,6 +346,13 @@ export default function LeaderboardPage() {
                           <div>
                             <div className="text-sm font-mono">{winner.wallet}</div>
                             <div className="text-xs text-gray-400">Round #{winner.round}</div>
+                            <div className="text-xs text-gray-400">
+                              {winner.color === "red"
+                                ? "Trash Can"
+                                : winner.color === "green"
+                                  ? "Trap Can"
+                                  : "Rat Dumpster"}
+                            </div>
                           </div>
                         </div>
                         <span className="text-green-400 font-bold">+{winner.amount}</span>

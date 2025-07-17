@@ -37,45 +37,45 @@ export default function TeamsPage() {
   const teamStats: TeamStats[] = [
     {
       color: "red",
-      name: "Red Rockets",
+      name: "Trash Can Titans",
       members: 1247,
       totalWins: 3420,
       totalStaked: 125000,
       winRate: 34.2,
       currentStreak: 8,
       topPlayer: "RedRocket88",
-      emoji: "🔴",
+      emoji: "🗑️",
     },
     {
       color: "green",
-      name: "Green Machines",
+      name: "Trap Can Troop",
       members: 1156,
       totalWins: 3180,
       totalStaked: 118000,
       winRate: 32.8,
       currentStreak: 3,
       topPlayer: "GreenGoblin",
-      emoji: "🟢",
+      emoji: "🪤",
     },
     {
       color: "blue",
-      name: "Blue Whales",
+      name: "Rat Dumpster Crew",
       members: 1389,
       totalWins: 3290,
       totalStaked: 142000,
       winRate: 33.0,
       currentStreak: 12,
       topPlayer: "BlueWhale777",
-      emoji: "🔵",
+      emoji: "🐀",
     },
   ]
 
   const mockTeamMembers: TeamMember[] = [
-    { wallet: "BlueWhale777", wins: 89, contribution: 15420, joinDate: "2024-01-01", rank: 1 },
-    { wallet: "DeepBlue42", wins: 76, contribution: 12800, joinDate: "2024-01-03", rank: 2 },
-    { wallet: "7xK9...mN2p", wins: 12, contribution: 2400, joinDate: "2024-01-15", rank: 847 },
-    { wallet: "BlueStorm", wins: 45, contribution: 8900, joinDate: "2024-01-05", rank: 3 },
-    { wallet: "AzureKing", wins: 38, contribution: 7200, joinDate: "2024-01-08", rank: 4 },
+    { wallet: "BlueWhale777", wins: 89, contribution: 15420, joinDate: "2025-07-17", rank: 1 },
+    { wallet: "DeepBlue42", wins: 76, contribution: 12800, joinDate: "2025-07-17", rank: 2 },
+    { wallet: "7xK9...mN2p", wins: 12, contribution: 2400, joinDate: "2025-07-17", rank: 847 },
+    { wallet: "BlueStorm", wins: 45, contribution: 8900, joinDate: "2025-07-17", rank: 3 },
+    { wallet: "AzureKing", wins: 38, contribution: 7200, joinDate: "2025-07-17", rank: 4 },
   ]
 
   const currentTeam = teamStats.find((team) => team.color === selectedTeam)!
@@ -109,7 +109,7 @@ export default function TeamsPage() {
             <div className="flex items-center gap-2">
               <Users className="w-6 h-6 text-purple-400" />
               <div className="text-2xl font-bold bg-gradient-to-r from-red-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
-                COLOR GUILDS
+                TRASH GUILDS
               </div>
             </div>
           </div>

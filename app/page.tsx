@@ -30,7 +30,7 @@ export default function LandingPage() {
         {/* Header */}
         <header className="p-6 flex justify-between items-center border-b border-purple-500/30">
           <div className="text-2xl font-bold bg-gradient-to-r from-red-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
-            Trash
+            Trash Clash
           </div>
           <div className="flex gap-4">
             <Link href="/spectator">
@@ -65,13 +65,13 @@ export default function LandingPage() {
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-tight">
               <span className="block bg-gradient-to-r from-red-500 via-green-500 to-blue-500 bg-clip-text text-transparent animate-pulse">
-                COLOR CLASH
+                TRASH CLASH
               </span>
               <span className="block text-3xl md:text-4xl text-purple-300 mt-4">Battle of the Degens</span>
             </h1>
 
             <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-              High-speed color betting on Gorbagana testnet. Choose your color, stake your GORB, and battle other degens
+              High-speed Trash betting on Gorbagana. Choose your Trash, stake your GORB, and battle other degens
               in 30-second rounds of pure chaos.
             </p>
 
@@ -80,8 +80,8 @@ export default function LandingPage() {
               <Card className="bg-red-500/10 border-red-500/30 hover:bg-red-500/20 transition-all">
                 <CardContent className="p-6 text-center">
                   <Target className="w-12 h-12 text-red-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-red-400 mb-2">Pick Your Color</h3>
-                  <p className="text-gray-300">Red, Green, or Blue - choose your side in the battle</p>
+                  <h3 className="text-xl font-bold text-red-400 mb-2">Pick Your Trash</h3>
+                  <p className="text-gray-300"> Trash Can, Trap Can, or Rat Dumpster - choose your side in the battle</p>
                 </CardContent>
               </Card>
 
@@ -89,7 +89,7 @@ export default function LandingPage() {
                 <CardContent className="p-6 text-center">
                   <Zap className="w-12 h-12 text-green-400 mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-green-400 mb-2">Lightning Fast</h3>
-                  <p className="text-gray-300">60-second rounds on Solana's blazing-fast network</p>
+                  <p className="text-gray-300">30-second rounds on Solana's blazing-fast network</p>
                 </CardContent>
               </Card>
 
