@@ -97,7 +97,7 @@ export default function LandingPage() {
                 <CardContent className="p-6 text-center">
                   <Trophy className="w-12 h-12 text-blue-400 mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-blue-400 mb-2">Win Big</h3>
-                  <p className="text-gray-300">Massive payouts for the winning color each round</p>
+                  <p className="text-gray-300">Massive payouts for the winning trash each round</p>
                 </CardContent>
               </Card>
             </div>
