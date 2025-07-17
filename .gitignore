@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+.pnpm/
+
+# Build output
+.next/
+out/
+dist/
+
+# Production
+build/
+
+# Misc
+.DS_Store
+.env
+.env.*
+.next/cache/
+
+# VSCode
+.vscode/
+
+# OS generated files
+Thumbs.db 
