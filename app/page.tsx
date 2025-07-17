@@ -72,7 +72,7 @@ export default function LandingPage() {
 
             <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
               High-speed color betting on Gorbagana testnet. Choose your color, stake your GORB, and battle other degens
-              in 60-second rounds of pure chaos.
+              in 30-second rounds of pure chaos.
             </p>
 
             {/* Features Grid */}
