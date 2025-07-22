@@ -1,14 +1,23 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Wallet, Zap, Trophy, Target, Eye, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { WalletMultiButton, useWalletContext } from "@/components/wallet-provider";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { UsernameModal } from "@/components/username-modal";
 
 export default function LandingPage() {
+  const { connected, publicKey, gorbBalance, solBalance, userProfile, fetchUserProfile } = useWalletContext();
   const [isConnecting, setIsConnecting] = useState(false)
   const [walletConnected, setWalletConnected] = useState(false)
+  const { disconnect } = useWallet();
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [usernameLoading, setUsernameLoading] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const connectWallet = async () => {
     setIsConnecting(true)
@@ -18,6 +27,33 @@ export default function LandingPage() {
       setIsConnecting(false)
     }, 2000)
   }
+
+  // Fetch SOL balance on wallet connect
+  useEffect(() => {
+    if (publicKey) {
+      // refreshBalance && refreshBalance(); // This line was removed as per the new_code
+    }
+  }, [publicKey]); // refreshBalance was removed from dependency array
+
+  // Check for username after wallet connect
+  useEffect(() => {
+    if (connected && userProfile === null) {
+      setShowUsernameModal(true);
+    }
+  }, [connected, userProfile]);
+
+  const handleUsernameSubmit = async (username: string) => {
+    if (!publicKey) return;
+    setUsernameLoading(true);
+    await fetch(`${apiUrl}/api/users/set-username`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wallet: publicKey.toBase58(), username }),
+    });
+    await fetchUserProfile(); // Refetch profile to get the new username
+    setUsernameLoading(false);
+    setShowUsernameModal(false);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white font-mono">
@@ -102,22 +138,23 @@ export default function LandingPage() {
               </Card>
             </div>
 
-            {/* Wallet Connection */}
-            <div className="space-y-6">
-              {!walletConnected ? (
-                <Button
-                  onClick={connectWallet}
-                  disabled={isConnecting}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-4 text-xl font-bold rounded-lg shadow-lg hover:shadow-purple-500/25 transition-all"
-                >
-                  <Wallet className="w-6 h-6 mr-3" />
-                  {isConnecting ? "Connecting..." : "Connect Wallet"}
-                </Button>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-center gap-3 text-green-400">
+            {/* Wallet Connect Button (Dynamic) */}
+            <div className="flex flex-col items-center mt-8 mb-4 space-y-4">
+              {connected && publicKey ? (
+                <>
+                  <div className="flex items-center gap-3 text-green-400">
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                    <span className="text-lg">Wallet Connected: 7xK9...mN2p</span>
+                    <span className="text-lg">Wallet Connected: {publicKey.toBase58()}</span>
+                  </div>
+                  <div className="flex items-center gap-6 text-gray-300">
+                    <button
+                      className="border border-purple-500 text-xs px-2 py-1 rounded text-purple-300 hover:bg-purple-800 mr-2"
+                      onClick={disconnect}
+                    >
+                      Disconnect
+                    </button>
+                    <span>SOL: {solBalance?.toFixed(3) ?? "-"}</span>
+                    <span>GOR: {gorbBalance ?? "-"}</span>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <Link href="/game">
@@ -126,38 +163,31 @@ export default function LandingPage() {
                       </Button>
                     </Link>
                     <Link href="/spectator">
-                      <Button
-                        variant="outline"
-                        className="border-blue-500 text-blue-300 hover:bg-blue-500/20 px-6 py-3 bg-transparent"
-                      >
+                      <Button variant="outline" className="border-blue-500 text-blue-300 hover:bg-blue-500/20 px-6 py-3 bg-transparent">
                         <Eye className="w-4 h-4 mr-2" />
                         Spectate
                       </Button>
                     </Link>
                     <Link href="/flash-flip">
-                      <Button
-                        variant="outline"
-                        className="border-yellow-500 text-yellow-300 hover:bg-yellow-500/20 px-6 py-3 bg-transparent"
-                      >
+                      <Button variant="outline" className="border-yellow-500 text-yellow-300 hover:bg-yellow-500/20 px-6 py-3 bg-transparent">
                         <Zap className="w-4 h-4 mr-2" />
                         Flash Flip
                       </Button>
                     </Link>
                     <Link href="/nfts">
-                      <Button
-                        variant="outline"
-                        className="border-purple-500 text-purple-300 hover:bg-purple-500/20 px-6 py-3 bg-transparent"
-                      >
+                      <Button variant="outline" className="border-purple-500 text-purple-300 hover:bg-purple-500/20 px-6 py-3 bg-transparent">
                         <Sparkles className="w-4 h-4 mr-2" />
                         My NFTs
                       </Button>
                     </Link>
                   </div>
-                </div>
+                </>
+              ) : (
+                <WalletMultiButton className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-12 py-4 text-xl font-bold rounded-lg shadow-lg hover:shadow-purple-500/25 transition-all" />
               )}
-
-              <p className="text-sm text-gray-400">Supports Backpack, Phantom, and all Solana wallets</p>
             </div>
+
+            <p className="text-sm text-gray-400">Supports Backpack, Phantom, and all Solana wallets</p>
           </div>
         </main>
 
@@ -171,7 +201,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-400">42,069</div>
-                <div className="text-gray-400">GORB Staked</div>
+                <div className="text-gray-400">GOR Staked</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-blue-400">∞</div>
@@ -193,6 +223,14 @@ export default function LandingPage() {
           </div>
         </footer>
       </div>
+
+      {/* Username Modal for new users */}
+      <UsernameModal
+        isOpen={showUsernameModal}
+        onSubmit={handleUsernameSubmit}
+        onClose={() => {}}
+        loading={usernameLoading}
+      />
     </div>
   )
 }

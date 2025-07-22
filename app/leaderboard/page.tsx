@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -10,6 +10,7 @@ import Link from "next/link"
 interface Player {
   rank: number
   wallet: string
+  username?: string | null
   wins: number
   losses: number
   totalStaked: number
@@ -19,77 +20,89 @@ interface Player {
   favoriteColor: "red" | "green" | "blue"
 }
 
+interface GlobalStats {
+  totalPlayers: number;
+  totalRounds: number;
+  gorbWagered: number;
+  colorWinRates: { _id: string, count: number }[];
+}
+
+interface RecentWinner {
+  username: string | null;
+  wallet: string;
+  color: "red" | "green" | "blue";
+  amount: number;
+  round: number;
+}
+
 export default function LeaderboardPage() {
   const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "all">("all")
+  const [players, setPlayers] = useState<Player[]>([])
+  const [loading, setLoading] = useState(true)
+  const [globalStats, setGlobalStats] = useState<GlobalStats | null>(null);
+  const [recentWinners, setRecentWinners] = useState<RecentWinner[]>([]);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  const mockPlayers: Player[] = [
-    {
-      rank: 1,
-      wallet: "DegenKing420",
-      wins: 47,
-      losses: 23,
-      totalStaked: 15420,
-      totalWon: 28350,
-      winRate: 67.1,
-      streak: 8,
-      favoriteColor: "red",
-    },
-    {
-      rank: 2,
-      wallet: "ColorMaster88",
-      wins: 42,
-      losses: 28,
-      totalStaked: 12800,
-      totalWon: 19200,
-      winRate: 60.0,
-      streak: 3,
-      favoriteColor: "green",
-    },
-    {
-      rank: 3,
-      wallet: "BlueWhale777",
-      wins: 38,
-      losses: 32,
-      totalStaked: 22100,
-      totalWon: 25400,
-      winRate: 54.3,
-      streak: -2,
-      favoriteColor: "blue",
-    },
-    {
-      rank: 4,
-      wallet: "GorbGoblin",
-      wins: 35,
-      losses: 25,
-      totalStaked: 9800,
-      totalWon: 14200,
-      winRate: 58.3,
-      streak: 5,
-      favoriteColor: "red",
-    },
-    {
-      rank: 5,
-      wallet: "RainbowRekt",
-      wins: 33,
-      losses: 37,
-      totalStaked: 11500,
-      totalWon: 9800,
-      winRate: 47.1,
-      streak: -1,
-      favoriteColor: "green",
-    },
-    {
-      rank: 6,
-      wallet: "7xK9...mN2p",
-      wins: 12,
-      losses: 8,
-      totalStaked: 2400,
-      totalWon: 3200,
-      winRate: 60.0,
-      streak: 2,
-      favoriteColor: "blue",
-    },
-  ]
+  useEffect(() => {
+    async function fetchLeaderboard() {
+      setLoading(true)
+      try {
+        const res = await fetch(`${apiUrl}/api/leaderboard`)
+        const data = await res.json()
+        setPlayers(
+          data.map((entry: any, idx: number) => ({
+            rank: idx + 1,
+            wallet: entry.user?.wallet || "Unknown",
+            username: entry.user?.username || null,
+            wins: entry.wins,
+            losses: entry.losses,
+            totalStaked: entry.totalStaked,
+            totalWon: entry.totalWon,
+            winRate:
+              entry.wins + entry.losses > 0
+                ? ((entry.wins / (entry.wins + entry.losses)) * 100)
+                : 0,
+            streak: 0, // You can add streak logic if you want
+            favoriteColor:
+              entry.favoriteBin === "trashcan"
+                ? "red"
+                : entry.favoriteBin === "trapcan"
+                ? "green"
+                : "blue",
+          }))
+        )
+      } catch (err) {
+        setPlayers([])
+      }
+      setLoading(false)
+    }
+    async function fetchStats() {
+      try {
+        const res = await fetch(`${apiUrl}/api/stats/global`);
+        const data = await res.json();
+        setGlobalStats(data);
+      } catch (err) {
+        console.error("Failed to fetch global stats", err);
+      }
+    }
+    async function fetchRecentWinners() {
+      try {
+        const res = await fetch(`${apiUrl}/api/winners/recent`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setRecentWinners(data);
+        } else {
+          setRecentWinners([]); // Ensure it's always an array
+        }
+      } catch (err) {
+        console.error("Failed to fetch recent winners", err);
+        setRecentWinners([]); // Ensure it's always an array on error
+      }
+    }
+    fetchLeaderboard()
+    fetchStats();
+    fetchRecentWinners();
+  }, [apiUrl]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -110,6 +123,14 @@ export default function LeaderboardPage() {
       : color === "green"
         ? "🪤"
         : "🐀"
+  }
+
+  const calculateWinRate = (colorId: string) => {
+    if (!globalStats || !globalStats.colorWinRates) return '0.0%';
+    const totalWins = globalStats.colorWinRates.reduce((sum, rate) => sum + rate.count, 0);
+    if (totalWins === 0) return '0.0%';
+    const colorWins = globalStats.colorWinRates.find(rate => rate._id === colorId)?.count || 0;
+    return ((colorWins / totalWins) * 100).toFixed(1) + '%';
   }
 
   return (
@@ -164,7 +185,7 @@ export default function LeaderboardPage() {
             {/* Top 3 Podium */}
             <div className="lg:col-span-4 mb-8">
               <div className="grid md:grid-cols-3 gap-6">
-                {mockPlayers.slice(0, 3).map((player, index) => (
+                {players.slice(0, 3).map((player, index) => (
                   <Card
                     key={player.wallet}
                     className={`${
@@ -177,7 +198,9 @@ export default function LeaderboardPage() {
                   >
                     <CardHeader className="text-center pb-2">
                       <div className="flex justify-center mb-2">{getRankIcon(player.rank)}</div>
-                      <CardTitle className="text-lg">{player.wallet}</CardTitle>
+                      <CardTitle className="text-lg">
+                        {player.username ? player.username : player.wallet.slice(0, 4) + "..." + player.wallet.slice(-4)}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center space-y-2">
                       <div className="text-2xl font-bold text-green-400">{player.totalWon} GORB</div>
@@ -222,25 +245,20 @@ export default function LeaderboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {mockPlayers.map((player) => (
+                    {loading ? (
+                      <div className="text-center text-gray-400 py-4">Loading leaderboard...</div>
+                    ) : players.length === 0 ? (
+                      <div className="text-center text-gray-400 py-4">No leaderboard data available.</div>
+                    ) : players.map((player) => (
                       <div
                         key={player.wallet}
-                        className={`flex items-center justify-between p-4 rounded-lg transition-all hover:bg-gray-800/50 ${
-                          player.wallet === "7xK9...mN2p"
-                            ? "bg-purple-500/10 border border-purple-500/30"
-                            : "bg-gray-800/30"
-                        }`}
+                        className={`flex items-center justify-between p-4 rounded-lg transition-all hover:bg-gray-800/50 bg-gray-800/30`}
                       >
                         <div className="flex items-center gap-4">
                           <div className="flex items-center justify-center w-8">{getRankIcon(player.rank)}</div>
                           <div>
                             <div className="font-bold flex items-center gap-2">
-                              {player.wallet}
-                              {player.wallet === "7xK9...mN2p" && (
-                                <Badge variant="outline" className="border-purple-500 text-purple-400 text-xs">
-                                  YOU
-                                </Badge>
-                              )}
+                              {player.username ? player.username : player.wallet.slice(0, 4) + "..." + player.wallet.slice(-4)}
                             </div>
                             <div className="text-sm text-gray-400">
                               {player.wins}W / {player.losses}L • {player.winRate}% WR
@@ -292,15 +310,15 @@ export default function LeaderboardPage() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Total Players</span>
-                    <span className="font-bold">1,337</span>
+                    <span className="font-bold">{globalStats?.totalPlayers?.toLocaleString() ?? '...'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Total Rounds</span>
-                    <span className="font-bold">42,069</span>
+                    <span className="font-bold">{globalStats?.totalRounds?.toLocaleString() ?? '...'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">GORB Wagered</span>
-                    <span className="font-bold text-yellow-400">2.1M</span>
+                    <span className="font-bold text-yellow-400">{globalStats?.gorbWagered?.toLocaleString() ?? '...'}</span>
                   </div>
                   <div className="border-t border-gray-600 pt-4">
                     <div className="text-sm text-gray-400 mb-2">Color Win Rates</div>
@@ -309,19 +327,19 @@ export default function LeaderboardPage() {
                         <span className="flex items-center gap-2">
                           <span className="text-lg">🗑️</span> <span className="text-red-400">Trash Can</span>
                         </span>
-                        <span>34.2%</span>
+                        <span>{calculateWinRate('trashcan')}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="flex items-center gap-2">
                           <span className="text-lg">🪤</span> <span className="text-green-400">Trap Can</span>
                         </span>
-                        <span>32.8%</span>
+                        <span>{calculateWinRate('trapcan')}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="flex items-center gap-2">
                           <span className="text-lg">🐀</span> <span className="text-blue-400">Rat Dumpster</span>
                         </span>
-                        <span>33.0%</span>
+                        <span>{calculateWinRate('ratdumpster')}</span>
                       </div>
                     </div>
                   </div>
@@ -334,24 +352,15 @@ export default function LeaderboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {[
-                      { wallet: "DegenKing420", color: "red" as const, amount: 420, round: 1337 },
-                      { wallet: "BlueWhale777", color: "blue" as const, amount: 777, round: 1336 },
-                      { wallet: "GorbGoblin", color: "green" as const, amount: 250, round: 1335 },
-                      { wallet: "ColorMaster88", color: "red" as const, amount: 180, round: 1334 },
-                    ].map((winner, index) => (
+                    {Array.isArray(recentWinners) && recentWinners.map((winner, index) => (
                       <div key={index} className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{getColorEmoji(winner.color)}</span>
                           <div>
-                            <div className="text-sm font-mono">{winner.wallet}</div>
+                            <div className="text-sm font-mono">{winner.username || (winner.wallet ? winner.wallet.slice(0, 4) + '...' + winner.wallet.slice(-4) : 'Unknown')}</div>
                             <div className="text-xs text-gray-400">Round #{winner.round}</div>
                             <div className="text-xs text-gray-400">
-                              {winner.color === "red"
-                                ? "Trash Can"
-                                : winner.color === "green"
-                                  ? "Trap Can"
-                                  : "Rat Dumpster"}
+                              {winner.color === "red" ? "Trash Can" : winner.color === "green" ? "Trap Can" : "Rat Dumpster"}
                             </div>
                           </div>
                         </div>
