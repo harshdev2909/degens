@@ -66,19 +66,28 @@ router.post('/place', async (req: Request, res: Response) => {
       }
     }
 
-    // After sending the transaction and getting the signature:
-    let confirmed = false;
-    let attempts = 0;
-    let confirmation;
-    while (!confirmed && attempts < 5) {
-      confirmation = await solanaConnection.confirmTransaction(txSignature, 'confirmed');
-      if (confirmation.value && !confirmation.value.err) confirmed = true;
-      else await new Promise(res => setTimeout(res, 2000));
-      attempts++;
+    // Remove backend transaction creation/sending. Only verify the txSignature from frontend.
+    // Use only one declaration of 'signature' in this scope.
+    const signature = txSignature;
+    const txInfo = await solanaConnection.getTransaction(signature, { commitment: 'confirmed' });
+    if (!txInfo || !txInfo.meta || txInfo.meta.err) {
+      return res.status(400).json({ error: 'Transaction not found or not confirmed' });
     }
-    if (!confirmed) {
-      console.error('Transaction confirmation failed after retries:', confirmation?.value);
-      return res.status(500).json({ error: 'Transaction not confirmed', details: confirmation?.value });
+    // Check for both transfers
+    const { SystemProgram } = require('@solana/web3.js');
+    const instructions = txInfo.transaction.message.instructions;
+    let treasuryFound = false;
+    let feeFound = false;
+    for (const inst of instructions) {
+      const programId = txInfo.transaction.message.accountKeys[inst.programIdIndex].toBase58();
+      if (programId === SystemProgram.programId.toBase58()) {
+        const keys = inst.accounts.map(idx => txInfo.transaction.message.accountKeys[idx].toBase58());
+        if (keys[1] === TREASURY_WALLET) treasuryFound = true;
+        if (keys[1] === FEE_WALLET) feeFound = true;
+      }
+    }
+    if (!treasuryFound || !feeFound) {
+      return res.status(400).json({ error: 'Transaction does not include required transfers' });
     }
 
     // Create bet
@@ -105,8 +114,7 @@ router.post('/place', async (req: Request, res: Response) => {
     tx.feePayer = new PublicKey(wallet);
     // You must provide the correct signer here. If you do not have the user's private key, you cannot sign on their behalf.
     // For now, use an empty array (no signer) or replace with the correct Keypair if available.
-    const signature = await solanaConnection.sendTransaction(tx, []); // TODO: Replace [] with the correct signer Keypair
-
+    
     // Create bet
     const bet = await Bet.create({
       user: user._id,
