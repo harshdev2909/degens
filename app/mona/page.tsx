@@ -14,8 +14,8 @@ export default function MonaPage() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      fetch("http://localhost:4000/api/treasury/transactions").then(res => res.json()),
-      fetch("http://localhost:4000/api/treasury/users").then(res => res.json()),
+      fetch("https://degens-6q78.onrender.com/api/treasury/transactions").then(res => res.json()),
+      fetch("https://degens-6q78.onrender.com/api/treasury/users").then(res => res.json()),
     ]).then(([txns, users]) => {
       setTxns(txns);
       setUsers(users);
