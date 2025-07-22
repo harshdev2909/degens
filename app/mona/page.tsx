@@ -71,6 +71,10 @@ export default function MonaPage() {
                 <span className="text-gray-400 text-sm">Total Transactions</span>
                 <span className="text-2xl font-bold text-blue-400">{txns.length}</span>
               </div>
+              <div className="flex flex-col items-center">
+                <span className="text-gray-400 text-sm">Total Users</span>
+                <span className="text-2xl font-bold text-purple-400">{users.length}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -84,43 +88,45 @@ export default function MonaPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Signature</TableHead>
-                  <TableHead>Direction</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Date/Time</TableHead>
-                  <TableHead>User</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {txns.map((txn, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="font-mono text-xs">{txn.signature}</TableCell>
-                    <TableCell>
-                      <Badge className={txn.direction === "in" ? "bg-green-600" : "bg-red-600"}>
-                        {txn.direction === "in" ? (
-                          <span className="flex items-center gap-1"><ArrowDown className="w-4 h-4" /> IN</span>
-                        ) : (
-                          <span className="flex items-center gap-1"><ArrowUp className="w-4 h-4" /> OUT</span>
-                        )}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className={txn.direction === "in" ? "text-green-400" : "text-red-400"}>
-                      {txn.amount} SOL
-                    </TableCell>
-                    <TableCell className="text-xs text-gray-400">{new Date(txn.date).toLocaleString()}</TableCell>
-                    <TableCell>
-                      <span className="font-mono text-xs">{txn.user?.wallet || txn.userWallet}</span>
-                      {txn.user?.username && (
-                        <span className="ml-2 text-purple-300 font-bold">{txn.user.username}</span>
-                      )}
-                    </TableCell>
+            <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Signature</TableHead>
+                    <TableHead>Direction</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Date/Time</TableHead>
+                    <TableHead>User</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {txns.map((txn, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-mono text-xs">{txn.signature}</TableCell>
+                      <TableCell>
+                        <Badge className={txn.direction === "in" ? "bg-green-600" : "bg-red-600"}>
+                          {txn.direction === "in" ? (
+                            <span className="flex items-center gap-1"><ArrowDown className="w-4 h-4" /> IN</span>
+                          ) : (
+                            <span className="flex items-center gap-1"><ArrowUp className="w-4 h-4" /> OUT</span>
+                          )}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className={txn.direction === "in" ? "text-green-400" : "text-red-400"}>
+                        {txn.amount} SOL
+                      </TableCell>
+                      <TableCell className="text-xs text-gray-400">{new Date(txn.date).toLocaleString()}</TableCell>
+                      <TableCell>
+                        <span className="font-mono text-xs">{txn.user?.wallet || txn.userWallet}</span>
+                        {txn.user?.username && (
+                          <span className="ml-2 text-purple-300 font-bold">{txn.user.username}</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 

@@ -1,6 +1,8 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import http from 'http';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { Connection } from '@solana/web3.js';
 import userRoutes from './routes/user';
@@ -11,13 +13,13 @@ import payoutRoutes from './routes/payout';
 import statsRoutes from './routes/stats';
 import winnersRoutes from './routes/winners';
 import treasuryRouter from './routes/treasury';
-import './ws'; // Import WebSocket server
+import setupWebSocket from './ws'; // Export a function from ws.ts that takes the server
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 app.use('/api/users', userRoutes);
 app.use('/api/rounds', roundRoutes);
 app.use('/api/bets', betRoutes);
@@ -39,10 +41,15 @@ mongoose.connect(MONGODB_URI)
 // Solana connection
 export const solanaConnection = new Connection(SOLANA_RPC_URL, 'confirmed');
 
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', network: 'Gorbagana', solanaRpc: SOLANA_RPC_URL });
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT}`);
+// --- WebSocket setup ---
+const server = http.createServer(app);
+setupWebSocket(server);
+
+// --- Start server ---
+server.listen(PORT, () => {
+  console.log(`Server (API + WS) running on port ${PORT}`);
 }); 

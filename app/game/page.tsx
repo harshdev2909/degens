@@ -104,8 +104,11 @@ export default function GamePage() {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:4001"
-    wsRef.current = new WebSocket(wsUrl)
+    // Use NEXT_PUBLIC_WS_URL if set, otherwise default to ws://localhost:4000
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+      ? `wss://${window.location.hostname}`
+      : 'ws://localhost:4000');
+    wsRef.current = new WebSocket(wsUrl);
 
     wsRef.current.onopen = () => {
       console.log("WebSocket connected")
@@ -525,6 +528,9 @@ export default function GamePage() {
       setShowRoundTransitionLoader(false)
     }
   }, [round, timeLeft, showRoundTransitionLoader])
+
+  // Add state to track last 30 round results
+  const [lastRounds, setLastRounds] = useState<any[]>([]);
 
   if (!connected) {
     return (
@@ -1043,6 +1049,22 @@ export default function GamePage() {
         loading={usernameLoading}
         description="Enter a unique username to personalize your profile."
       />
+
+      {/* Last 30 Rounds Pattern */}
+      <div className="mt-8 mb-4">
+        <Card className="bg-gray-900/50 border-purple-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg">Last 30 Rounds</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-row gap-2 items-center">
+              {lastRounds.map((r, i) => (
+                <span key={i} className="text-2xl">{r.emoji}</span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
