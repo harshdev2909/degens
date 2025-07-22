@@ -1047,7 +1047,7 @@ export default function GamePage() {
       <UsernameModal
         isOpen={showUsernameModal}
         onSubmit={handleUsernameSubmit}
-        onClose={() => {}}
+        onClose={() => setShowUsernameModal(false)}
         loading={usernameLoading}
         description="Enter a unique username to personalize your profile."
       />
