@@ -18,14 +18,14 @@ try {
 
 const FEE_PERCENT = 0.10;
 const FEE_WALLET = process.env.FEE_WALLET;
-if (!FEE_WALLET) {
-  throw new Error('FEE_WALLET not set in environment variables.');
-}
 
 const router = express.Router();
 
 // Process payout to winner
 router.post('/process', async (req: Request, res: Response) => {
+  if (!FEE_WALLET) {
+    return res.status(500).json({ error: 'FEE_WALLET not set in environment variables.' });
+  }
   const { wallet, amount, roundNumber, betAmount, multiplier } = req.body;
   
   if (!wallet || !amount || !roundNumber) {

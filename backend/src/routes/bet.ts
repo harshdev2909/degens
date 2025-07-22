@@ -11,6 +11,7 @@ const TREASURY_WALLET = process.env.TREASURY_WALLET || 'TREASURY_PUBLIC_KEY_HERE
 const FEE_PERCENT = 0.10;
 const FEE_WALLET = process.env.FEE_WALLET;
 
+
 const router = express.Router();
 
 // Place a bet
@@ -25,6 +26,9 @@ router.post('/place', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Invalid color' });
   }
   
+  if (!FEE_WALLET) {
+    return res.status(500).json({ error: 'FEE_WALLET not set in environment variables.' });
+  }
   try {
     // Find or create user by wallet
     let user = await User.findOne({ wallet });
@@ -99,8 +103,9 @@ router.post('/place', async (req: Request, res: Response) => {
     );
     tx.recentBlockhash = blockhash;
     tx.feePayer = new PublicKey(wallet);
-
-    const signature = await solanaConnection.sendTransaction(tx, [solanaConnection.feePayer]);
+    // You must provide the correct signer here. If you do not have the user's private key, you cannot sign on their behalf.
+    // For now, use an empty array (no signer) or replace with the correct Keypair if available.
+    const signature = await solanaConnection.sendTransaction(tx, []); // TODO: Replace [] with the correct signer Keypair
 
     // Create bet
     const bet = await Bet.create({
