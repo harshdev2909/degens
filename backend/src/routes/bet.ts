@@ -87,7 +87,7 @@ router.post('/place', async (req: Request, res: Response) => {
       }
     }
     if (!treasuryFound || !feeFound) {
-      return res.status(400).json({ error: 'Transaction does not include required transfers' });
+      return res.status(400).json({ error: `Transaction does not include required transfers: treasuryFound=${treasuryFound}, feeFound=${feeFound}` });
     }
 
     // Create bet

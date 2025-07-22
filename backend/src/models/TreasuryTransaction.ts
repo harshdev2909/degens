@@ -14,7 +14,7 @@ export interface ITreasuryTransaction extends Document {
 const TreasuryTransactionSchema = new Schema<ITreasuryTransaction>({
   signature: { type: String, required: true, unique: true },
   amount: { type: Number, required: true },
-  direction: { type: String, enum: ['in', 'out'], required: true },
+  direction: { type: String, enum: ['in', 'out', 'fee'], required: true },
   date: { type: Date, required: true },
   userWallet: { type: String, required: true },
   user: { type: Schema.Types.ObjectId, ref: 'User' },

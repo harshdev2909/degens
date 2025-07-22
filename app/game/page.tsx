@@ -361,25 +361,37 @@ export default function GamePage() {
       console.log("To:", TREASURY_WALLET)
       console.log("Amount:", amount, "SOL")
 
-      // 1. Send SOL transaction to treasury
-      const treasuryPubkey = new PublicKey(TREASURY_WALLET)
-      // Get recent blockhash and lastValidBlockHeight ONCE
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash()
+      const fee = amount * 0.10;
+      const netAmount = amount - fee;
+      if (!TREASURY_WALLET) {
+        throw new Error("TREASURY_WALLET is not defined");
+      }
+      if (!process.env.NEXT_PUBLIC_FEE_WALLET) {
+        throw new Error("NEXT_PUBLIC_FEE_WALLET is not defined");
+      }
+      const treasuryPubkey = new PublicKey(TREASURY_WALLET as string);
+      const feePubkey = new PublicKey(process.env.NEXT_PUBLIC_FEE_WALLET as string);
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
       const tx = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: treasuryPubkey,
-          lamports: amount * LAMPORTS_PER_SOL,
+          lamports: netAmount * LAMPORTS_PER_SOL,
+        }),
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: feePubkey,
+          lamports: fee * LAMPORTS_PER_SOL,
         })
-      )
-      tx.recentBlockhash = blockhash
-      tx.feePayer = publicKey
+      );
+      tx.recentBlockhash = blockhash;
+      tx.feePayer = publicKey;
 
-      console.log("Sending transaction...")
+      console.log("Sending transaction...");
       const signature = await sendTransaction(tx, connection, {
         skipPreflight: false,
         preflightCommitment: "confirmed"
-      })
+      });
       
       console.log("Transaction sent:", signature)
       console.log("Confirming transaction...")
