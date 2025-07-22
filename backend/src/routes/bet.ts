@@ -5,8 +5,11 @@ import User from '../models/User';
 import TreasuryTransaction from '../models/TreasuryTransaction';
 import { solanaConnection } from '../index';
 import { broadcastNewBet } from '../ws';
+import { PublicKey, SystemProgram, Transaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 const TREASURY_WALLET = process.env.TREASURY_WALLET || 'TREASURY_PUBLIC_KEY_HERE';
+const FEE_PERCENT = 0.10;
+const FEE_WALLET = process.env.FEE_WALLET;
 
 const router = express.Router();
 
@@ -75,12 +78,37 @@ router.post('/place', async (req: Request, res: Response) => {
     }
 
     // Create bet
+    const fee = amount * FEE_PERCENT;
+    const netAmount = amount - fee;
+
+    // 1. Send netAmount to treasury, 2. Send fee to FEE_WALLET
+    const treasuryPubkey = new PublicKey(TREASURY_WALLET);
+    const feePubkey = new PublicKey(FEE_WALLET);
+    const { blockhash, lastValidBlockHeight } = await solanaConnection.getLatestBlockhash();
+    const tx = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: new PublicKey(wallet),
+        toPubkey: treasuryPubkey,
+        lamports: netAmount * LAMPORTS_PER_SOL,
+      }),
+      SystemProgram.transfer({
+        fromPubkey: new PublicKey(wallet),
+        toPubkey: feePubkey,
+        lamports: fee * LAMPORTS_PER_SOL,
+      })
+    );
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = new PublicKey(wallet);
+
+    const signature = await solanaConnection.sendTransaction(tx, [solanaConnection.feePayer]);
+
+    // Create bet
     const bet = await Bet.create({
       user: user._id,
       round: round._id,
       bin: color, // Map color to bin for database
       amount,
-      txSignature: txSignature || 'MOCK_SIGNATURE'
+      txSignature: signature || 'MOCK_SIGNATURE'
     });
     
     // Update round totals
@@ -125,13 +153,25 @@ router.post('/place', async (req: Request, res: Response) => {
     
     // After bet is created and user/round are updated, add:
     await TreasuryTransaction.create({
-      signature: txSignature || 'MOCK_SIGNATURE',
+      signature: signature || 'MOCK_SIGNATURE',
       amount,
       direction: 'in',
       date: new Date(),
       userWallet: wallet,
       user: user._id
     });
+
+    // Optionally, log the fee as a TreasuryTransaction with direction: 'fee' or 'in' and userWallet: FEE_WALLET
+    if (FEE_WALLET) {
+      await TreasuryTransaction.create({
+        signature: signature || 'MOCK_SIGNATURE',
+        amount: fee,
+        direction: 'fee',
+        date: new Date(),
+        userWallet: FEE_WALLET,
+        user: user._id
+      });
+    }
     
     res.json({ bet: betResponse });
     

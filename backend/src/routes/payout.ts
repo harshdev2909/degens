@@ -16,6 +16,12 @@ try {
   throw new Error('Invalid base58 private key in TREASURY_PRIVATE_KEY. Please check your .env file.');
 }
 
+const FEE_PERCENT = 0.10;
+const FEE_WALLET = process.env.FEE_WALLET;
+if (!FEE_WALLET) {
+  throw new Error('FEE_WALLET not set in environment variables.');
+}
+
 const router = express.Router();
 
 // Process payout to winner
@@ -36,12 +42,19 @@ router.post('/process', async (req: Request, res: Response) => {
     }
     
     // 1. Send SOL from treasury to winner's wallet (on-chain)
+    const netAmount = amount - (amount * FEE_PERCENT);
     const winnerPubkey = new PublicKey(wallet);
+    const feePubkey = new PublicKey(FEE_WALLET);
     const tx = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: treasuryKeypair.publicKey,
         toPubkey: winnerPubkey,
-        lamports: amount * LAMPORTS_PER_SOL,
+        lamports: netAmount * LAMPORTS_PER_SOL,
+      }),
+      SystemProgram.transfer({
+        fromPubkey: treasuryKeypair.publicKey,
+        toPubkey: feePubkey,
+        lamports: (amount * FEE_PERCENT) * LAMPORTS_PER_SOL,
       })
     );
     const signature = await solanaConnection.sendTransaction(tx, [treasuryKeypair]);
@@ -71,10 +84,18 @@ router.post('/process', async (req: Request, res: Response) => {
     try {
       await TreasuryTransaction.create({
         signature,
-        amount,
+        amount: netAmount,
         direction: 'out',
         date: new Date(),
         userWallet: wallet,
+        user: user._id
+      });
+      await TreasuryTransaction.create({
+        signature,
+        amount: amount * FEE_PERCENT,
+        direction: 'fee',
+        date: new Date(),
+        userWallet: FEE_WALLET,
         user: user._id
       });
       console.log('Treasury OUT transaction recorded:', signature);
