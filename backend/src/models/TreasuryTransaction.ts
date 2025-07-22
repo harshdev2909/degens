@@ -12,7 +12,7 @@ export interface ITreasuryTransaction extends Document {
 }
 
 const TreasuryTransactionSchema = new Schema<ITreasuryTransaction>({
-  signature: { type: String, required: true, unique: true },
+  signature: { type: String, required: true },
   amount: { type: Number, required: true },
   direction: { type: String, enum: ['in', 'out', 'fee'], required: true },
   date: { type: Date, required: true },
