@@ -104,10 +104,12 @@ export default function GamePage() {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
-    // Use NEXT_PUBLIC_WS_URL if set, otherwise default to ws://localhost:4000
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
-      ? `wss://${window.location.hostname}`
-      : 'ws://localhost:4000');
+    // Use Render URL in production, localhost in dev
+    const wsUrl =
+      process.env.NEXT_PUBLIC_WS_URL ||
+      (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+        ? 'wss://degens-6q78.onrender.com'
+        : 'ws://localhost:4000');
     wsRef.current = new WebSocket(wsUrl);
 
     wsRef.current.onopen = () => {

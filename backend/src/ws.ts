@@ -47,8 +47,10 @@ async function startNewRound() {
       currentRound.ratdumpsterAmount = colorTotals.ratdumpster;
       currentRound.totalPot = colorTotals.trashcan + colorTotals.trapcan + colorTotals.ratdumpster;
       await currentRound.save();
+      // Use API_BASE_URL env var for cross-service calls (set to your Render URL in production)
+      const apiBase = process.env.API_BASE_URL || 'http://localhost:4000';
       try {
-        await fetch('http://localhost:4000/api/leaderboard/update', {
+        await fetch(`${apiBase}/api/leaderboard/update`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ roundId: currentRound._id.toString() }),
