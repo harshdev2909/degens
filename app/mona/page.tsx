@@ -49,7 +49,7 @@ export default function MonaPage() {
         <Card className="bg-gray-900/70 border-green-500/30 mb-8">
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2">
-              <span className="text-yellow-400">📊</span>
+              {/* <span className="text-yellow-400">📊</span> */}
               Overall Stats
             </CardTitle>
           </CardHeader>

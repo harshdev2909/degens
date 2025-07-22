@@ -1031,12 +1031,9 @@ export default function GamePage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-purple-500/30 p-4 mt-8">
-        <div className="container mx-auto text-center">
-          <p className="text-gray-400 text-sm">
-            Built by <span className="text-purple-400 font-bold">Harsh Sharma</span> with{" "}
-            <span className="text-red-500">❤️</span> for degens
-          </p>
+      <footer className="w-full fixed bottom-0 left-0 z-50 bg-gradient-to-r from-black/80 via-purple-900/60 to-black/80 border-t border-purple-500/30 py-4 px-2 flex items-center justify-center">
+        <div className="text-center w-full">
+          <span className="text-lg font-bold text-purple-300 drop-shadow">Built by <span className="text-purple-400 font-bold">Harsh Sharma</span> with <span className="text-red-400">❤️</span> for degens</span>
         </div>
       </footer>
       
