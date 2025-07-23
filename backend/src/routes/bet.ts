@@ -26,6 +26,11 @@ router.post('/place', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Invalid color' });
   }
   
+  // Prevent bets greater than 10 SOL
+  if (amount > 10) {
+    return res.status(400).json({ error: 'Bet amount cannot exceed 10 SOL' });
+  }
+  
   if (!FEE_WALLET) {
     return res.status(500).json({ error: 'FEE_WALLET not set in environment variables.' });
   }

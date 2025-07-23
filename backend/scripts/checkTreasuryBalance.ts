@@ -17,7 +17,7 @@ async function checkBalance() {
 
   // Placeholder for GORB SPL token balance
   // To implement: use @solana/spl-token to fetch SPL token balance
-  console.log('GORB SPL Token Balance: (fetch with @solana/spl-token)');
+  console.log('GOR SPL Token Balance: (fetch with @solana/spl-token)');
 }
 
 checkBalance(); 
