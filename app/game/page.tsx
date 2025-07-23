@@ -339,6 +339,15 @@ export default function GamePage() {
       setError("Invalid bet amount")
       return
     }
+    if (amount > 10) {
+      setError("Bet amount cannot exceed 10 SOL")
+      toast({
+        title: "Bet Too Large",
+        description: "You cannot place a bet greater than 10 SOL.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setPlacingBet(true)
     setError(null)
