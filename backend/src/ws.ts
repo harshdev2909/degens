@@ -38,7 +38,7 @@ async function startNewRound() {
         winningColor = 'trashcan'; // 45% chance
       } else {
         winningColor = 'trapcan'; // 45% chance
-      }
+        }
       currentRound.status = 'ended';
       currentRound.endedAt = new Date();
       currentRound.winningBin = winningColor;
@@ -100,15 +100,15 @@ export default function setupWebSocket(server?: any) {
     wss = new WebSocketServer({ port: 4001 });
     console.log('WebSocket server running on ws://localhost:4001');
   }
-  wss.on('connection', ws => {
-    console.log('New WebSocket connection');
-    if (currentRound) {
-      ws.send(JSON.stringify({ type: 'round_start', round: currentRound }));
-    }
-  });
-  wss.on('error', (error) => {
-    console.error('WebSocket server error:', error);
-  });
+wss.on('connection', ws => {
+  console.log('New WebSocket connection');
+  if (currentRound) {
+    ws.send(JSON.stringify({ type: 'round_start', round: currentRound }));
+  }
+});
+wss.on('error', (error) => {
+  console.error('WebSocket server error:', error);
+});
   // Wait for MongoDB to be ready
   mongoose.connection.once('open', () => {
     initializeWebSocket();
@@ -125,4 +125,4 @@ async function initializeWebSocket() {
   } catch (err) {
     console.error('WebSocket initialization error:', err);
   }
-} 
+}

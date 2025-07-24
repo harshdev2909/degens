@@ -1,5 +1,7 @@
 "use client";
 import { useWallet } from "@solana/wallet-adapter-react";
+import Link from "next/link";
+import { Button } from "./ui/button";
 
 export function Header() {
   const { connected, publicKey, disconnect } = useWallet();

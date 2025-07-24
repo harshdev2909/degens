@@ -351,22 +351,29 @@ export default function LeaderboardPage() {
                   <CardTitle>Recent Winners</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {Array.isArray(recentWinners) && recentWinners.map((winner, index) => (
-                      <div key={index} className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{getColorEmoji(winner.color)}</span>
-                          <div>
-                            <div className="text-sm font-mono">{winner.username || (winner.wallet ? winner.wallet.slice(0, 4) + '...' + winner.wallet.slice(-4) : 'Unknown')}</div>
-                            <div className="text-xs text-gray-400">Round #{winner.round}</div>
-                            <div className="text-xs text-gray-400">
-                              {winner.color === "red" ? "Trash Can" : winner.color === "green" ? "Trap Can" : "Rat Dumpster"}
+                  <div className="space-y-3 sm:space-y-2 flex flex-col sm:block overflow-x-auto">
+                    <div className="flex flex-col gap-3 sm:gap-2 sm:block min-w-0">
+                      {Array.isArray(recentWinners) && recentWinners.map((winner, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 bg-gray-800/50 rounded min-w-[220px] sm:min-w-0"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-lg sm:text-xl">{getColorEmoji(winner.color)}</span>
+                            <div className="min-w-0">
+                              <div className="text-sm sm:text-base font-mono truncate max-w-[120px] sm:max-w-[160px]">
+                                {winner.username || (winner.wallet ? winner.wallet.slice(0, 4) + '...' + winner.wallet.slice(-4) : 'Unknown')}
+                              </div>
+                              <div className="text-xs text-gray-400">Round #{winner.round}</div>
+                              <div className="text-xs text-gray-400">
+                                {winner.color === "red" ? "Trash Can" : winner.color === "green" ? "Trap Can" : "Rat Dumpster"}
+                              </div>
                             </div>
                           </div>
+                          <span className="text-green-400 font-bold text-base sm:text-lg mt-2 sm:mt-0">+{winner.amount}</span>
                         </div>
-                        <span className="text-green-400 font-bold">+{winner.amount}</span>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

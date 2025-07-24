@@ -119,7 +119,7 @@ router.post('/place', async (req: Request, res: Response) => {
     tx.feePayer = new PublicKey(wallet);
     // You must provide the correct signer here. If you do not have the user's private key, you cannot sign on their behalf.
     // For now, use an empty array (no signer) or replace with the correct Keypair if available.
-    
+
     // Create bet
     const bet = await Bet.create({
       user: user._id,

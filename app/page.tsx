@@ -107,7 +107,7 @@ export default function LandingPage() {
               Trash Clash
             </div>
             <div className="flex gap-4">
-              <Link href="/spectator">
+              {/* <Link href="/spectator">
                 <Button variant="outline" className="border-blue-500 text-blue-300 hover:bg-blue-500/20 bg-transparent">
                   <Eye className="w-4 h-4 mr-2" />
                   Spectator
@@ -130,6 +130,15 @@ export default function LandingPage() {
                   <Trophy className="w-4 h-4 mr-2" />
                   Leaderboard
                 </Button>
+              </Link> */}
+              <Link href="/privacy-policy">
+                <Button variant="outline" className="border-purple-500 text-purple-300 hover:bg-purple-500/20 bg-transparent">Privacy Policy</Button>
+              </Link>
+              <Link href="/contact-support">
+                <Button variant="outline" className="border-purple-500 text-purple-300 hover:bg-purple-500/20 bg-transparent">Contact & Support</Button>
+              </Link>
+              <Link href="/about">
+                <Button variant="outline" className="border-purple-500 text-purple-300 hover:bg-purple-500/20 bg-transparent">About</Button>
               </Link>
             </div>
           </header>
@@ -225,7 +234,7 @@ export default function LandingPage() {
                 )}
               </div>
 
-              <p className="text-sm text-gray-400">Supports Backpack, Phantom, and all Solana wallets</p>
+              <p className="text-sm text-gray-400">Supports Backpack wallet</p>
             </div>
           </main>
 
@@ -266,7 +275,7 @@ export default function LandingPage() {
         <UsernameModal
           isOpen={showUsernameModal}
           onSubmit={handleUsernameSubmit}
-          onClose={() => {}}
+          onClose={() => { setShowUsernameModal(false)}}
           loading={usernameLoading}
         />
       </div>
